@@ -18,12 +18,7 @@ import sys
 from pathlib import Path
 
 from dept_map import load_department_map
-from gs1 import (
-    ean13_to_upc12,
-    fallback_from_digits,
-    from_segmented_upc,
-    is_valid_gtin13,
-)
+from gs1 import barcode_columns, is_valid_gtin13
 
 _ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_IN = _ROOT / "source" / "extracted.csv"
@@ -91,21 +86,35 @@ def main() -> int:
         if not reader.fieldnames or "upc" not in reader.fieldnames:
             print("Expected a header row with an 'upc' column.", file=sys.stderr)
             return 1
-        skip = {"upc", "UPCA", "UPC12", "UPCA_no_check_digit", "check_digit_ok"}
+        skip = {
+            "upc",
+            "UPCA",
+            "UPC12",
+            "EAN8",
+            "Is_EAN8",
+            "UPCA_no_check_digit",
+            "check_digit_ok",
+        }
         rest = _rest_fieldnames(list(reader.fieldnames), skip)
-        fields = ["upc", "UPCA", "UPC12", "UPCA_no_check_digit", "check_digit_ok"] + rest
+        fields = [
+            "upc",
+            "UPCA",
+            "UPC12",
+            "EAN8",
+            "Is_EAN8",
+            "UPCA_no_check_digit",
+            "check_digit_ok",
+        ] + rest
         writer = csv.DictWriter(f_out, fieldnames=fields, extrasaction="ignore")
         writer.writeheader()
         for row in reader:
             upc = row.get("upc", "")
-            parsed = from_segmented_upc(upc)
-            if parsed:
-                data_12, ean13 = parsed
-            else:
-                data_12, ean13 = fallback_from_digits(upc)
+            ean13, data_12, upc12, _upc12_no_chk, ean8, is_ean8 = barcode_columns(upc)
 
             row["UPCA"] = ean13
-            row["UPC12"] = ean13_to_upc12(ean13)
+            row["UPC12"] = upc12
+            row["EAN8"] = ean8
+            row["Is_EAN8"] = is_ean8
             row["UPCA_no_check_digit"] = data_12
             row["check_digit_ok"] = bool(ean13) and is_valid_gtin13(ean13)
 

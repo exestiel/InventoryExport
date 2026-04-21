@@ -29,6 +29,34 @@ def gtin12_check_digit(first_11: str) -> int:
     return (10 - (total % 10)) % 10
 
 
+def ean8_check_digit(first_seven: str) -> int:
+    """GS1 EAN-8 check digit from the first 7 digits (left to right)."""
+    total = 0
+    for i, ch in enumerate(first_seven):
+        d = int(ch)
+        if i % 2 == 0:
+            total += d * 3
+        else:
+            total += d
+    return (10 - (total % 10)) % 10
+
+
+def is_valid_ean8(ean8: str) -> bool:
+    if len(ean8) != 8 or not ean8.isdigit():
+        return False
+    return int(ean8[7]) == ean8_check_digit(ean8[:7])
+
+
+def detect_ean8_from_gtin12_data(data_12: str) -> str | None:
+    """If GTIN-12 data is four zeros + valid EAN-8, return the 8-digit code."""
+    if len(data_12) != 12 or not data_12.isdigit() or not data_12.startswith("0000"):
+        return None
+    candidate = data_12[-8:]
+    if is_valid_ean8(candidate):
+        return candidate
+    return None
+
+
 def ean13_to_upc12(ean13: str) -> str:
     if len(ean13) == 13 and ean13.isdigit() and ean13[0] == "0":
         return ean13[1:]
@@ -70,8 +98,8 @@ def fallback_from_digits(upc: str) -> tuple[str, str]:
     return digits, digits + str(chk)
 
 
-def barcode_columns(upc: str) -> tuple[str, str, str, str]:
-    """UPCA, UPCA_No_Check_Digit, UPC12, UPC12_No_Check_Digit."""
+def barcode_columns(upc: str) -> tuple[str, str, str, str, str, bool]:
+    """UPCA, UPCA_No_Check_Digit, UPC12, UPC12_No_Check_Digit, EAN8, Is_EAN8."""
     parsed = from_segmented_upc(upc)
     if parsed:
         data_12, ean13 = parsed
@@ -83,7 +111,10 @@ def barcode_columns(upc: str) -> tuple[str, str, str, str]:
     if len(upc12) == 12 and upc12.isdigit():
         upc12_no_check = upc12[:11]
 
-    return ean13, data_12, upc12, upc12_no_check
+    ean8 = detect_ean8_from_gtin12_data(data_12) or ""
+    is_ean8 = bool(ean8)
+
+    return ean13, data_12, upc12, upc12_no_check, ean8, is_ean8
 
 
 def is_valid_barcode(upca: str) -> bool:

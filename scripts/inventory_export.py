@@ -24,6 +24,8 @@ OUT_FIELDS = [
     "UPCA_No_Check_Digit",
     "UPC12",
     "UPC12_No_Check_Digit",
+    "EAN8",
+    "Is_EAN8",
     "Description",
     "Dept_Id",
     "DeptName",
@@ -114,7 +116,9 @@ def main() -> int:
                     size = row[i + 3]
                     uom = row[i + 4]
                     reg_price = row[i + 5]
-                    upca, upca_no_chk, upc12, upc12_no_chk = barcode_columns(upc)
+                    upca, upca_no_chk, upc12, upc12_no_chk, ean8, is_ean8 = (
+                        barcode_columns(upc)
+                    )
                     dept_display = dept_map.get(dept_raw, dept_raw)
                     writer.writerow(
                         {
@@ -123,6 +127,8 @@ def main() -> int:
                             "UPCA_No_Check_Digit": upca_no_chk,
                             "UPC12": upc12,
                             "UPC12_No_Check_Digit": upc12_no_chk,
+                            "EAN8": ean8,
+                            "Is_EAN8": is_ean8,
                             "Description": desc,
                             "Dept_Id": dept_raw,
                             "DeptName": dept_display,

@@ -17,12 +17,41 @@ def test_from_segmented_upc():
 
 
 def test_barcode_columns_segmented():
-    upca, no_chk, upc12, upc12_no_chk = gs1.barcode_columns("01-23456-78901")
+    upca, no_chk, upc12, upc12_no_chk, ean8, is_ean8 = gs1.barcode_columns(
+        "01-23456-78901"
+    )
     assert len(upca) == 13
     assert no_chk == "012345678901"
     assert upc12 == upca[1:] if upca.startswith("0") else ""
     if len(upc12) == 12:
         assert len(upc12_no_chk) == 11
+    assert ean8 == ""
+    assert is_ean8 is False
+
+
+def test_ean8_check_digit_known_vector():
+    # GS1 example-style EAN-8: 96385074 (7 payload + check)
+    assert gs1.ean8_check_digit("9638507") == 4
+    assert gs1.is_valid_ean8("96385074")
+    assert not gs1.is_valid_ean8("96385075")
+
+
+def test_detect_ean8_from_gtin12_data():
+    assert gs1.detect_ean8_from_gtin12_data("000096385074") == "96385074"
+    assert gs1.detect_ean8_from_gtin12_data("000096385075") is None
+    assert gs1.detect_ean8_from_gtin12_data("100096385074") is None
+    assert gs1.detect_ean8_from_gtin12_data("123456789012") is None
+
+
+def test_barcode_columns_ean8_segmented():
+    # 00 + 00963 + 85074 -> GTIN-12 000096385074 (EAN-8 96385074)
+    upca, no_chk, upc12, upc12_no_chk, ean8, is_ean8 = gs1.barcode_columns(
+        "00-00963-85074"
+    )
+    assert no_chk == "000096385074"
+    assert ean8 == "96385074"
+    assert is_ean8 is True
+    assert len(upca) == 13
 
 
 def test_is_valid_barcode_gtin13():
