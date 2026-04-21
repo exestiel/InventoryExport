@@ -1,4 +1,4 @@
-# echo.convert
+# Echo.Convert
 
 **The Echo Company** — Converts **multi-line inventory CSV exports** (common from retail/POS reporting) into a flat file: hyphenated item codes (`NN-YYYYY-ZZZZZ`) are expanded to GS1-style values (EAN-13 / UPC-A style fields) plus description, department, size, UOM, and regular price. If your source report’s layout or column order differs, you may need to adjust how the script scans rows (see [ROADMAP.md](ROADMAP.md)).
 
