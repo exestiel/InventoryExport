@@ -98,3 +98,7 @@ Input files are read as UTF-8 (with BOM) or Windows-1252 when possible; output u
 ## See also
 
 - **[ROADMAP.md](ROADMAP.md)** — phased ideas for future extensions (configurable layouts, dry-run, packaging, CI, etc.).
+
+## License
+
+This project is open source under the **[MIT License](LICENSE)**. You may use, copy, modify, and distribute the software with minimal conditions (see the license file for the full text). If you publish a derivative, keep the copyright and permission notice. You may replace the copyright line in `LICENSE` with your own name or organization when you fork or maintain a fork.
