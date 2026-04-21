@@ -1,0 +1,2 @@
+# Runtime: Python 3.11+ stdlib only (see scripts/).
+pytest>=8.0
