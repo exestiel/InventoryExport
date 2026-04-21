@@ -17,7 +17,7 @@ def test_from_segmented_upc():
 
 
 def test_barcode_columns_segmented():
-    upca, no_chk, upc12, upc12_no_chk, upce, is_upce = gs1.barcode_columns(
+    upca, no_chk, upc12, upc12_no_chk, upce, is_upce, upce_exp = gs1.barcode_columns(
         "01-23456-78901"
     )
     assert len(upca) == 13
@@ -27,6 +27,7 @@ def test_barcode_columns_segmented():
         assert len(upc12_no_chk) == 11
     assert upce == ""
     assert is_upce is False
+    assert upce_exp == ""
 
 
 def test_expand_upce_to_upca12_known_vectors():
@@ -51,12 +52,13 @@ def test_detect_upce_from_gtin12_data():
 
 def test_barcode_columns_upce_segmented():
     # 00 + 00023 + 45673 -> GTIN-12 000002345673 (UPC-E 02345673)
-    upca, no_chk, upc12, upc12_no_chk, upce, is_upce = gs1.barcode_columns(
+    upca, no_chk, upc12, upc12_no_chk, upce, is_upce, upce_exp = gs1.barcode_columns(
         "00-00023-45673"
     )
     assert no_chk == "000002345673"
     assert upce == "02345673"
     assert is_upce is True
+    assert upce_exp == "023456000073"
     assert len(upca) == 13
 
 

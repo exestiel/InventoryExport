@@ -26,6 +26,7 @@ OUT_FIELDS = [
     "UPC12_No_Check_Digit",
     "UPCE",
     "Is_UPCE",
+    "UPCE_Expanded_UPC12",
     "Description",
     "Dept_Id",
     "DeptName",
@@ -116,7 +117,7 @@ def main() -> int:
                     size = row[i + 3]
                     uom = row[i + 4]
                     reg_price = row[i + 5]
-                    upca, upca_no_chk, upc12, upc12_no_chk, upce, is_upce = (
+                    upca, upca_no_chk, upc12, upc12_no_chk, upce, is_upce, upce_exp = (
                         barcode_columns(upc)
                     )
                     dept_display = dept_map.get(dept_raw, dept_raw)
@@ -129,6 +130,7 @@ def main() -> int:
                             "UPC12_No_Check_Digit": upc12_no_chk,
                             "UPCE": upce,
                             "Is_UPCE": is_upce,
+                            "UPCE_Expanded_UPC12": upce_exp,
                             "Description": desc,
                             "Dept_Id": dept_raw,
                             "DeptName": dept_display,

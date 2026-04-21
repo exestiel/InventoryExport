@@ -104,8 +104,8 @@ def fallback_from_digits(upc: str) -> tuple[str, str]:
     return digits, digits + str(chk)
 
 
-def barcode_columns(upc: str) -> tuple[str, str, str, str, str, bool]:
-    """UPCA, UPCA_No_Check_Digit, UPC12, UPC12_No_Check_Digit, UPCE, Is_UPCE."""
+def barcode_columns(upc: str) -> tuple[str, str, str, str, str, bool, str]:
+    """UPCA, UPCA_No_Check_Digit, UPC12, UPC12_No_Check_Digit, UPCE, Is_UPCE, UPCE_Expanded_UPC12."""
     parsed = from_segmented_upc(upc)
     if parsed:
         data_12, ean13 = parsed
@@ -119,8 +119,9 @@ def barcode_columns(upc: str) -> tuple[str, str, str, str, str, bool]:
 
     upce = detect_upce_from_gtin12_data(data_12) or ""
     is_upce = bool(upce)
+    upce_expanded_upc12 = (expand_upce_to_upca12(upce) or "") if upce else ""
 
-    return ean13, data_12, upc12, upc12_no_check, upce, is_upce
+    return ean13, data_12, upc12, upc12_no_check, upce, is_upce, upce_expanded_upc12
 
 
 def is_valid_barcode(upca: str) -> bool:
