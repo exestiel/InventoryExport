@@ -1,6 +1,6 @@
 # Inventory Export
 
-Turns a multi-line inventory CSV export into a flat file with UPC-related columns: hyphenated item codes (`NN-YYYYY-ZZZZZ`) are expanded to GS1-style values (EAN-13 / UPC-A style fields) plus description, department, size, UOM, and regular price.
+Turns **multi-line inventory CSV exports** (common from retail/POS reporting) into a flat file: hyphenated item codes (`NN-YYYYY-ZZZZZ`) are expanded to GS1-style values (EAN-13 / UPC-A style fields) plus description, department, size, UOM, and regular price. If your source report’s layout or column order differs, you may need to adjust how the script scans rows (see [ROADMAP.md](ROADMAP.md)).
 
 ## Requirements
 
@@ -88,7 +88,7 @@ Runtime scripts use only the Python standard library; **`requirements.txt`** is 
 
 - **Python not found:** Install Python 3.11+ and ensure `py` or `python` is on PATH.
 - **Source file not found:** Save the export as **`source\inventory.csv`** (or pass `-i` / a positional path).
-- **0 rows written:** The report may not contain cells matching `NN-YYYYY-ZZZZZ`, or columns may not sit in the expected positions after the UPC cell.
+- **0 rows written:** The source file may not contain cells matching `NN-YYYYY-ZZZZZ`, or columns may not sit in the expected positions after the UPC cell (layout can differ by system, report, or export options).
 - **Garbled text:** Exports are read as UTF-8 (with BOM) or Windows-1252 when possible; extremely unusual encodings may need a manual resave from Excel or Notepad.
 
 ## Encoding

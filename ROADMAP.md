@@ -2,7 +2,7 @@
 
 Possible extensions for Inventory Export. Nothing here is committed work—use it to prioritize and track ideas.
 
-**Baseline today:** `inventory_export.py` reads a multi-line CSV, finds `NN-YYYYY-ZZZZZ` cells, and assumes five columns follow each UPC; GS1 helpers live in `scripts/gs1.py`. Optional paths: `extract_inventory` → `add_upca`; `validate_upca_check` for check digits. Windows: `start.bat` / `run_export.bat`. Tests: unit coverage for `gs1` in `tests/test_gs1.py`.
+**Baseline today:** The workflow targets typical **multi-line retail/POS inventory CSV** exports. `inventory_export.py` reads a multi-line CSV, finds `NN-YYYYY-ZZZZZ` cells, and assumes five columns follow each UPC; GS1 helpers live in `scripts/gs1.py`. Optional paths: `extract_inventory` → `add_upca`; `validate_upca_check` for check digits. Windows: `start.bat` / `run_export.bat`. Tests: unit coverage for `gs1` in `tests/test_gs1.py`.
 
 ## Phase 1 — Near-term / high leverage
 

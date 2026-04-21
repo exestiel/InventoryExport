@@ -1,4 +1,4 @@
-"""Extract UPC, Description, dept, size, UOM, Regular Price from inventory CSV export."""
+"""Extract UPC, Description, dept, size, UOM, Regular Price from multi-line inventory CSV export."""
 
 import argparse
 import csv

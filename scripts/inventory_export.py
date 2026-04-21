@@ -1,7 +1,7 @@
 """Parse inventory export CSV and write final file with UPC + barcode fields.
 
-Reads the multi-line CSV report, finds rows with NN-YYYYY-ZZZZZ item codes, and
-outputs EAN-13 / US UPC-12 derived fields.
+Targets typical multi-line retail/POS inventory CSV exports: finds rows with
+NN-YYYYY-ZZZZZ item codes and outputs EAN-13 / US UPC-12 derived fields.
 """
 
 import argparse
