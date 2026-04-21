@@ -2,7 +2,7 @@
 
 Possible extensions for echo.convert. Nothing here is committed work—use it to prioritize and track ideas.
 
-**Baseline today:** The workflow targets typical **multi-line retail/POS inventory CSV** exports. `inventory_export.py` reads a multi-line CSV, finds `NN-YYYYY-ZZZZZ` cells, and assumes five columns follow each UPC; GS1 helpers live in `scripts/gs1.py`. Numeric or padded values are normalized to 12 digits where needed before the GTIN-13 check digit is applied. **EAN-8** is detected when GTIN-12 data uses the GS1 layout (**four leading zeros** + eight digits with a valid EAN-8 check digit); exports include **`EAN8`** and **`Is_EAN8`** (and the same in `add_upca`). Source UPC fields are often zero-padded to 12 digits, the usual carrier for that layout. Optional paths: `extract_inventory` → `add_upca`; `validate_upca_check` for check digits. Windows: `start.bat` / `run_export.bat`. Tests: unit coverage for `gs1` in `tests/test_gs1.py`.
+**Baseline today:** The workflow targets typical **multi-line retail/POS inventory CSV** exports. `inventory_export.py` reads a multi-line CSV, finds `NN-YYYYY-ZZZZZ` cells, and assumes five columns follow each UPC; GS1 helpers live in `scripts/gs1.py`. Numeric or padded values are normalized to 12 digits where needed before the GTIN-13 check digit is applied. **UPC-E** (zero-suppressed UPC) is detected when GTIN-12 data uses the GS1 layout (**four leading zeros** + eight digits that expand to valid UPC-A with a correct GTIN-12 check digit); exports include **`UPCE`** and **`Is_UPCE`** (and the same in `add_upca`). Source UPC fields are often zero-padded to 12 digits, the usual carrier for that layout. Optional paths: `extract_inventory` → `add_upca`; `validate_upca_check` for check digits. Windows: `start.bat` / `run_export.bat`. Tests: unit coverage for `gs1` in `tests/test_gs1.py`.
 
 ## Phase 1 — Near-term / high leverage
 
@@ -13,7 +13,7 @@ Possible extensions for echo.convert. Nothing here is committed work—use it to
 ## Phase 2 — Robustness
 
 - **Logging** — Replace ad hoc `print` with `logging`, plus `--verbose` / `--quiet` for scripts and automation.
-- **Stronger validation** — Beyond GS1 check digits and EAN-8 detection: empty descriptions, suspicious prices, or other unexpected barcode/UPC shapes not already covered.
+- **Stronger validation** — Beyond GS1 check digits and UPC-E detection: empty descriptions, suspicious prices, or other unexpected barcode/UPC shapes not already covered.
 - **Large files** — Optional progress reporting while streaming CSV (rows processed or throughput).
 
 ## Phase 3 — Developer experience

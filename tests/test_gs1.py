@@ -17,7 +17,7 @@ def test_from_segmented_upc():
 
 
 def test_barcode_columns_segmented():
-    upca, no_chk, upc12, upc12_no_chk, ean8, is_ean8 = gs1.barcode_columns(
+    upca, no_chk, upc12, upc12_no_chk, upce, is_upce = gs1.barcode_columns(
         "01-23456-78901"
     )
     assert len(upca) == 13
@@ -25,32 +25,38 @@ def test_barcode_columns_segmented():
     assert upc12 == upca[1:] if upca.startswith("0") else ""
     if len(upc12) == 12:
         assert len(upc12_no_chk) == 11
-    assert ean8 == ""
-    assert is_ean8 is False
+    assert upce == ""
+    assert is_upce is False
 
 
-def test_ean8_check_digit_known_vector():
-    # GS1 example-style EAN-8: 96385074 (7 payload + check)
-    assert gs1.ean8_check_digit("9638507") == 4
-    assert gs1.is_valid_ean8("96385074")
-    assert not gs1.is_valid_ean8("96385075")
+def test_expand_upce_to_upca12_known_vectors():
+    # Stack Overflow / GS1-style expansion examples
+    assert gs1.expand_upce_to_upca12("02345673") == "023456000073"
+    assert gs1.expand_upce_to_upca12("07832309") == "078000003239"
+    assert gs1.expand_upce_to_upca12("06397126") == "063200009716"
 
 
-def test_detect_ean8_from_gtin12_data():
-    assert gs1.detect_ean8_from_gtin12_data("000096385074") == "96385074"
-    assert gs1.detect_ean8_from_gtin12_data("000096385075") is None
-    assert gs1.detect_ean8_from_gtin12_data("100096385074") is None
-    assert gs1.detect_ean8_from_gtin12_data("123456789012") is None
+def test_is_valid_upce():
+    assert gs1.is_valid_upce("02345673")
+    assert gs1.is_valid_upce("07832309")
+    assert not gs1.is_valid_upce("02345674")
 
 
-def test_barcode_columns_ean8_segmented():
-    # 00 + 00963 + 85074 -> GTIN-12 000096385074 (EAN-8 96385074)
-    upca, no_chk, upc12, upc12_no_chk, ean8, is_ean8 = gs1.barcode_columns(
-        "00-00963-85074"
+def test_detect_upce_from_gtin12_data():
+    assert gs1.detect_upce_from_gtin12_data("000002345673") == "02345673"
+    assert gs1.detect_upce_from_gtin12_data("000002345674") is None
+    assert gs1.detect_upce_from_gtin12_data("100002345673") is None
+    assert gs1.detect_upce_from_gtin12_data("123456789012") is None
+
+
+def test_barcode_columns_upce_segmented():
+    # 00 + 00023 + 45673 -> GTIN-12 000002345673 (UPC-E 02345673)
+    upca, no_chk, upc12, upc12_no_chk, upce, is_upce = gs1.barcode_columns(
+        "00-00023-45673"
     )
-    assert no_chk == "000096385074"
-    assert ean8 == "96385074"
-    assert is_ean8 is True
+    assert no_chk == "000002345673"
+    assert upce == "02345673"
+    assert is_upce is True
     assert len(upca) == 13
 
 

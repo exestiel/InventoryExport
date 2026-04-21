@@ -90,8 +90,8 @@ def main() -> int:
             "upc",
             "UPCA",
             "UPC12",
-            "EAN8",
-            "Is_EAN8",
+            "UPCE",
+            "Is_UPCE",
             "UPCA_no_check_digit",
             "check_digit_ok",
         }
@@ -100,8 +100,8 @@ def main() -> int:
             "upc",
             "UPCA",
             "UPC12",
-            "EAN8",
-            "Is_EAN8",
+            "UPCE",
+            "Is_UPCE",
             "UPCA_no_check_digit",
             "check_digit_ok",
         ] + rest
@@ -109,12 +109,12 @@ def main() -> int:
         writer.writeheader()
         for row in reader:
             upc = row.get("upc", "")
-            ean13, data_12, upc12, _upc12_no_chk, ean8, is_ean8 = barcode_columns(upc)
+            ean13, data_12, upc12, _upc12_no_chk, upce, is_upce = barcode_columns(upc)
 
             row["UPCA"] = ean13
             row["UPC12"] = upc12
-            row["EAN8"] = ean8
-            row["Is_EAN8"] = is_ean8
+            row["UPCE"] = upce
+            row["Is_UPCE"] = is_upce
             row["UPCA_no_check_digit"] = data_12
             row["check_digit_ok"] = bool(ean13) and is_valid_gtin13(ean13)
 
