@@ -94,3 +94,7 @@ Runtime scripts use only the Python standard library; **`requirements.txt`** is 
 ## Encoding
 
 Input files are read as UTF-8 (with BOM) or Windows-1252 when possible; output uses UTF-8 with BOM for Excel compatibility.
+
+## See also
+
+- **[ROADMAP.md](ROADMAP.md)** — phased ideas for future extensions (configurable layouts, dry-run, packaging, CI, etc.).
