@@ -12,14 +12,15 @@ Turns **multi-line inventory CSV exports** (common from retail/POS reporting) in
 | Path | Purpose |
 |------|---------|
 | `source/` | Put your raw export here as `inventory.csv` (or pass paths on the command line). |
+| `source/dep.csv` | Optional multiline CSV mapping department **id** to **display name**. With no header row, **column 0 = id** and **column 1 = name**. If the first row looks like headers, **id** and **name** columns are detected by label (even when there are extra columns). If missing, **`DeptName`** falls back to the same value as **`Dept_Id`**. |
 | `result/` | Output CSV files from the export and validation steps. |
 | `scripts/` | Python tools (see below). |
 
 ## Workflows
 
-**Primary (recommended):** run **`inventory_export.py`** once. It reads the raw multi-line CSV and writes the final columns (`UPC`, `UPCA`, `UPCA_No_Check_Digit`, `UPC12`, `UPC12_No_Check_Digit`, etc.).
+**Primary (recommended):** run **`inventory_export.py`** once. It reads the raw multi-line CSV and writes the final columns (`UPC`, `UPCA`, `UPCA_No_Check_Digit`, `UPC12`, `UPC12_No_Check_Digit`, `Description`, **`Dept_Id`**, **`DeptName`**, etc.). **`Dept_Id`** is the id from the inventory row; **`DeptName`** is the resolved name from optional `source/dep.csv` when the id matches, otherwise the same string as **`Dept_Id`**. (Older outputs used a single `Dept` column—that layout is no longer produced.)
 
-**Optional two-step:** use **`extract_inventory.py`** to produce `source/extracted.csv`, then **`add_upca.py`** to add barcode columns to `result/extracted_with_upca.csv`. Use this when you want to inspect the extracted rows before computing UPCA.
+**Optional two-step:** use **`extract_inventory.py`** to produce `source/extracted.csv` (includes **`Dept_Id`** + **`DeptName`** using the same optional **`dep.csv`** mapping as the main export), then **`add_upca.py`** to add barcode columns to `result/extracted_with_upca.csv`. **`add_upca.py`** reloads **`dep.csv`** so **`DeptName`** stays in sync. Use this path when you want to inspect extracted rows before computing UPCA.
 
 **Validation:** **`validate_upca_check.py`** checks GS1 check digits on the `UPCA` column in a result file and can write bad rows to another CSV.
 
@@ -43,9 +44,9 @@ All scripts resolve default paths relative to the project root (the parent of `s
 
 | Script | Role |
 |--------|------|
-| **`inventory_export.py`** | Main pipeline: raw export → final CSV. |
-| **`extract_inventory.py`** | Optional: raw → `source/extracted.csv`. |
-| **`add_upca.py`** | Optional: extracted → `result/extracted_with_upca.csv`. |
+| **`inventory_export.py`** | Main pipeline: raw export → final CSV (`Dept_Id`, `DeptName` via optional `dep.csv`). |
+| **`extract_inventory.py`** | Optional: raw → `source/extracted.csv` with **`Dept_Id`** / **`DeptName`**; **`--dept-file`** (default `source/dep.csv`). |
+| **`add_upca.py`** | Optional: extracted → `result/extracted_with_upca.csv`; refreshes **`DeptName`** from **`dep.csv`**; **`--dept-file`** same default. |
 | **`validate_upca_check.py`** | Validate `UPCA`; second path / `-o` is the **invalid-rows** output file. |
 
 ### Command line
@@ -56,10 +57,13 @@ From the project root (Windows examples; on macOS/Linux use `python3` and forwar
 py -3 scripts\inventory_export.py
 py -3 scripts\inventory_export.py path\to\in.csv path\to\out.csv
 py -3 scripts\inventory_export.py -i source\inventory.csv -o result\out.csv
+py -3 scripts\inventory_export.py --dept-file source\dep.csv
 py -3 scripts\inventory_export.py --help
 ```
 
-Same pattern for `extract_inventory.py` and `add_upca.py`.
+`dep.csv` is read with the same UTF-8 / Windows-1252 heuristics as `inventory.csv`. The CSV parser handles **quoted fields that span multiple lines** (RFC 4180-style). If your `dep.csv` is a report-style multiline file that is *not* parseable as normal CSV rows, you may need a custom scanner later—see [ROADMAP.md](ROADMAP.md).
+
+Same **`--dept-file`** pattern for `extract_inventory.py` and `add_upca.py` (defaults to `source/dep.csv` when omitted). Legacy `extracted.csv` files with only **`dept`** or lowercase **`dept_id`** are still accepted by **`add_upca.py`**; it normalizes to **`Dept_Id`** + **`DeptName`** from the map.
 
 Validate:
 
@@ -90,6 +94,7 @@ Runtime scripts use only the Python standard library; **`requirements.txt`** is 
 - **Source file not found:** Save the export as **`source\inventory.csv`** (or pass `-i` / a positional path).
 - **0 rows written:** The source file may not contain cells matching `NN-YYYYY-ZZZZZ`, or columns may not sit in the expected positions after the UPC cell (layout can differ by system, report, or export options).
 - **Garbled text:** Exports are read as UTF-8 (with BOM) or Windows-1252 when possible; extremely unusual encodings may need a manual resave from Excel or Notepad.
+- **Department names wrong or still numeric:** Check that `source/dep.csv` exists, ids in column 0 **exactly** match **`Dept_Id`** from the inventory export (spacing/case), and that the first row is either data `(id, name)` or a recognized header (`id`, `dept_id`, `Department ID`, …).
 
 ## Encoding
 

@@ -9,12 +9,14 @@ import csv
 import sys
 from pathlib import Path
 
+from dept_map import load_department_map
 from gs1 import barcode_columns
 from io_utils import UPC_RE, open_text_read
 
 _ROOT = Path(__file__).resolve().parent.parent
 INPUT_DEFAULT = _ROOT / "source" / "inventory.csv"
 OUTPUT_DEFAULT = _ROOT / "result" / "Inventory_Final.csv"
+DEPT_MAP_DEFAULT = _ROOT / "source" / "dep.csv"
 
 OUT_FIELDS = [
     "UPC",
@@ -23,14 +25,15 @@ OUT_FIELDS = [
     "UPC12",
     "UPC12_No_Check_Digit",
     "Description",
-    "Dept",
+    "Dept_Id",
+    "DeptName",
     "Size",
     "UOM",
     "Regular Price",
 ]
 
 
-def _parse_args() -> tuple[Path, Path]:
+def _parse_args() -> tuple[Path, Path, Path]:
     p = argparse.ArgumentParser(
         description="Parse inventory CSV and write UPC / barcode columns.",
     )
@@ -64,6 +67,13 @@ def _parse_args() -> tuple[Path, Path]:
         dest="output_flag",
         help="output CSV; overrides positional output if set",
     )
+    p.add_argument(
+        "--dept-file",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="department id→name CSV (default: source/dep.csv); ignored if missing",
+    )
     args = p.parse_args()
     in_path = args.input_flag or (
         Path(args.input_pos) if args.input_pos is not None else INPUT_DEFAULT
@@ -71,15 +81,18 @@ def _parse_args() -> tuple[Path, Path]:
     out_path = args.output_flag or (
         Path(args.output_pos) if args.output_pos is not None else OUTPUT_DEFAULT
     )
-    return in_path, out_path
+    dept_path = args.dept_file if args.dept_file is not None else DEPT_MAP_DEFAULT
+    return in_path, out_path, dept_path
 
 
 def main() -> int:
-    in_path, out_path = _parse_args()
+    in_path, out_path, dept_path = _parse_args()
 
     if not in_path.is_file():
         print(f"Input not found: {in_path}", file=sys.stderr)
         return 1
+
+    dept_map = load_department_map(dept_path)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -97,11 +110,12 @@ def main() -> int:
                         break
                     upc = row[i].strip()
                     desc = row[i + 1]
-                    dept = row[i + 2]
+                    dept_raw = row[i + 2].strip()
                     size = row[i + 3]
                     uom = row[i + 4]
                     reg_price = row[i + 5]
                     upca, upca_no_chk, upc12, upc12_no_chk = barcode_columns(upc)
+                    dept_display = dept_map.get(dept_raw, dept_raw)
                     writer.writerow(
                         {
                             "UPC": upc,
@@ -110,7 +124,8 @@ def main() -> int:
                             "UPC12": upc12,
                             "UPC12_No_Check_Digit": upc12_no_chk,
                             "Description": desc,
-                            "Dept": dept,
+                            "Dept_Id": dept_raw,
+                            "DeptName": dept_display,
                             "Size": size,
                             "UOM": uom,
                             "Regular Price": reg_price,
