@@ -1,6 +1,6 @@
-# Inventory Export
+# echo.convert
 
-Turns **multi-line inventory CSV exports** (common from retail/POS reporting) into a flat file: hyphenated item codes (`NN-YYYYY-ZZZZZ`) are expanded to GS1-style values (EAN-13 / UPC-A style fields) plus description, department, size, UOM, and regular price. If your source report’s layout or column order differs, you may need to adjust how the script scans rows (see [ROADMAP.md](ROADMAP.md)).
+**The Echo Company** — Converts **multi-line inventory CSV exports** (common from retail/POS reporting) into a flat file: hyphenated item codes (`NN-YYYYY-ZZZZZ`) are expanded to GS1-style values (EAN-13 / UPC-A style fields) plus description, department, size, UOM, and regular price. If your source report’s layout or column order differs, you may need to adjust how the script scans rows (see [ROADMAP.md](ROADMAP.md)).
 
 ## Requirements
 
@@ -40,7 +40,7 @@ Turns **multi-line inventory CSV exports** (common from retail/POS reporting) in
 
 ## Scripts
 
-All scripts resolve default paths relative to the project root (the parent of `scripts/`). **Flags `-i` / `-o` override** the optional positional arguments when provided.
+These **echo.convert** entry points resolve default paths relative to the project root (the parent of `scripts/`). **Flags `-i` / `-o` override** the optional positional arguments when provided.
 
 | Script | Role |
 |--------|------|

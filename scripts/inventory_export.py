@@ -1,7 +1,7 @@
-"""Parse inventory export CSV and write final file with UPC + barcode fields.
+"""echo.convert — main entry: multiline inventory CSV to flat file with UPC + barcode fields.
 
-Targets typical multi-line retail/POS inventory CSV exports: finds rows with
-NN-YYYYY-ZZZZZ item codes and outputs EAN-13 / US UPC-12 derived fields.
+The Echo Company. Targets typical multi-line retail/POS inventory CSV exports:
+finds rows with NN-YYYYY-ZZZZZ item codes and outputs EAN-13 / US UPC-12 derived fields.
 """
 
 import argparse
@@ -35,7 +35,7 @@ OUT_FIELDS = [
 
 def _parse_args() -> tuple[Path, Path, Path]:
     p = argparse.ArgumentParser(
-        description="Parse inventory CSV and write UPC / barcode columns.",
+        description="echo.convert — convert multiline inventory CSV to a flat file (UPC / barcode columns).",
     )
     p.add_argument(
         "input_pos",

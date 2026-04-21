@@ -1,4 +1,5 @@
 @echo off
+rem echo.convert — silent multiline inventory CSV to flat file (The Echo Company)
 cd /d "%~dp0"
 if not exist "%~dp0source" mkdir "%~dp0source"
 if not exist "%~dp0result" mkdir "%~dp0result"

@@ -1,13 +1,14 @@
 @echo off
+rem echo.convert — interactive multiline inventory CSV to flat file (The Echo Company)
 if /i "%~1"=="__SUB__" goto :main
 cd /d "%~dp0"
-start "Inventory Export" cmd.exe /k call "%~f0" __SUB__
+start "echo.convert" cmd.exe /k call "%~f0" __SUB__
 exit /b 0
 
 :main
 cd /d "%~dp0"
 setlocal EnableDelayedExpansion
-title Inventory Export
+title echo.convert
 chcp 437 >nul 2>&1
 
 if not exist "%~dp0source" mkdir "%~dp0source"
@@ -17,7 +18,7 @@ set "INPUT=%~dp0source\inventory.csv"
 
 echo.
 echo ========================================
-echo   Inventory Export
+echo   echo.convert
 echo ========================================
 echo.
 

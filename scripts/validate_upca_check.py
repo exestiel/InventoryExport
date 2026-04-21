@@ -1,4 +1,4 @@
-"""Validate GS1 check digits on the UPCA column (GTIN-13 EAN-13 or GTIN-12 UPC-A)."""
+"""echo.convert — validate GS1 check digits on the UPCA column (GTIN-13 EAN-13 or GTIN-12 UPC-A)."""
 
 import argparse
 import csv
@@ -14,7 +14,7 @@ DEFAULT_INVALID_OUT = _ROOT / "result" / "Inventory_Final_check_invalid.csv"
 
 def _parse_args() -> tuple[Path, Path]:
     p = argparse.ArgumentParser(
-        description="Validate GS1 check digits on the UPCA column; write invalid rows to a file.",
+        description="echo.convert — validate GS1 check digits on UPCA; write invalid rows to a file.",
     )
     p.add_argument(
         "input_pos",

@@ -1,4 +1,6 @@
-"""Second pass: read extracted inventory CSV and add EAN-13 (GTIN-13) from upc.
+"""echo.convert — second pass: read extracted inventory CSV and add EAN-13 (GTIN-13) from upc.
+
+The Echo Company.
 
 Hyphenated source format NN-YYYYY-ZZZZZ is treated as the first 12 digits of EAN-13
 (GTIN-13) *without* the check digit: concatenate segments, then append the GS1
@@ -31,7 +33,7 @@ DEPT_MAP_DEFAULT = _ROOT / "source" / "dep.csv"
 
 def _parse_args() -> tuple[Path, Path, Path]:
     p = argparse.ArgumentParser(
-        description="Add UPCA (EAN-13) and UPC12 columns to extracted inventory CSV.",
+        description="echo.convert — add UPCA (EAN-13) and UPC12 columns to extracted inventory CSV.",
     )
     p.add_argument("input_pos", nargs="?", default=None, metavar="input")
     p.add_argument("output_pos", nargs="?", default=None, metavar="output")

@@ -1,4 +1,4 @@
-"""Extract UPC, Description, dept ids/names, size, UOM, Regular Price from multi-line inventory CSV export."""
+"""echo.convert — extract UPC, Description, dept ids/names, size, UOM, Regular Price from multiline inventory CSV."""
 
 import argparse
 import csv
@@ -26,7 +26,7 @@ OUT_HEADER = [
 
 def _parse_args() -> tuple[Path, Path, Path]:
     p = argparse.ArgumentParser(
-        description="Extract UPC columns from raw inventory CSV into a flat file.",
+        description="echo.convert — extract from raw multiline inventory CSV into a flat file.",
     )
     p.add_argument("input_pos", nargs="?", default=None, metavar="input")
     p.add_argument("output_pos", nargs="?", default=None, metavar="output")
